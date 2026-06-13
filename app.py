@@ -3,10 +3,11 @@ Streamlit frontend for AskFirst chat application.
 
 Run with: streamlit run app.py
 """
+import os
 import streamlit as st
 import requests
 
-API = "http://localhost:8000"
+API = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(page_title="AskFirst", page_icon="💬", layout="wide")
 
