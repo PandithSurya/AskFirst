@@ -14,14 +14,17 @@ st.set_page_config(page_title="AskFirst", page_icon="💬", layout="wide")
 
 def api_get(path: str):
     try:
-        r = requests.get(f"{API}{path}", timeout=10)
+        r = requests.get(f"{API}{path}", timeout=15)
         r.raise_for_status()
         return r.json()
     except requests.exceptions.ConnectionError:
-        st.error("❌ Cannot connect to backend. Run: `uvicorn main:app --reload`")
+        st.error(f"❌ Cannot connect to backend at: `{API}` — is it running?")
+        st.stop()
+    except requests.exceptions.Timeout:
+        st.error(f"⏱ Backend timed out at: `{API}` — it may be waking up, try again in 30s")
         st.stop()
     except Exception as e:
-        st.error(f"API error: {e}")
+        st.error(f"API error ({API}{path}): {e}")
         return None
 
 
@@ -31,10 +34,13 @@ def api_post(path: str, payload: dict):
         r.raise_for_status()
         return r.json()
     except requests.exceptions.ConnectionError:
-        st.error("❌ Cannot connect to backend. Run: `uvicorn main:app --reload`")
+        st.error(f"❌ Cannot connect to backend at: `{API}` — is it running?")
+        st.stop()
+    except requests.exceptions.Timeout:
+        st.error(f"⏱ Backend timed out — it may be waking up, try again in 30s")
         st.stop()
     except Exception as e:
-        st.error(f"API error: {e}")
+        st.error(f"API error ({API}{path}): {e}")
         return None
 
 
@@ -62,6 +68,7 @@ if "confirm_delete" not in st.session_state:
 
 with st.sidebar:
     st.title("💬 AskFirst")
+    st.caption(f"Backend: `{API}`")
     st.divider()
 
     if st.button("➕ New Chat", use_container_width=True, type="primary"):
