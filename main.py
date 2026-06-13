@@ -198,6 +198,11 @@ def verify_db(db: Session = Depends(get_db)):
     }
 
 
+@app.get("/")
+def root():
+    return {"status": "ok", "app": "AskFirst API"}
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
